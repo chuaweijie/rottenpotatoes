@@ -59,11 +59,43 @@ class MoviesController < ApplicationController
   end
 
   def sortTitle
-    @movies = Movie.order("title").all
+		@all_ratings = Movie.select("rating").group("rating")
+		ratings=params[:ratings]
+		if ratings == nil		
+			@all_ratings.each do |rating|
+				rating.rating = [rating.rating,true]
+			end
+    	@movies = Movie.where(:rating=>@all_ratings)
+		else
+			@all_ratings.each do |rating|
+				if ratings[rating.rating]==nil then
+					rating.rating = [rating.rating,false]
+				else
+					rating.rating = [rating.rating,true]
+				end
+			end
+    	@movies = Movie.order("title").where(:rating=>ratings.keys)
+		end
   end
 
   def sortDate
-    @movies = Movie.order("release_date").all
+ 		@all_ratings = Movie.select("rating").group("rating")
+		ratings=params[:ratings]
+		if ratings == nil		
+			@all_ratings.each do |rating|
+				rating.rating = [rating.rating,true]
+			end
+    	@movies = Movie.where(:rating=>@all_ratings)
+		else
+			@all_ratings.each do |rating|
+				if ratings[rating.rating]==nil then
+					rating.rating = [rating.rating,false]
+				else
+					rating.rating = [rating.rating,true]
+				end
+			end
+    	@movies = Movie.order("release_date").where(:rating=>ratings.keys)
+		end  
   end
 
 end
