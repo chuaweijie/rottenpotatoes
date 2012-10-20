@@ -11,7 +11,8 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
+		@all_ratings = Movie.select("rating").group("rating")
+    @movies = Movie.where(:rating=>params[:ratings].keys)
   end
 
   def new
