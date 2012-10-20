@@ -5,10 +5,10 @@
   %thead
     %tr
       %th
-        %a{:id=>"movie_title", :href=>sortTitle_movies_path} Movie Title
+        %a{:id=>"title_header", :href=>sortTitle_movies_path} Movie Title
       %th Rating
       %th
-        %a{:id=>"release_date", :href=>sortDate_movies_path} Release Date
+        %a{:id=>"release_date_header", :href=>sortDate_movies_path} Release Date
       %th More Info
   %tbody
     - @movies.each do |movie|
