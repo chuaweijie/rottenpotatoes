@@ -13,7 +13,21 @@ class MoviesController < ApplicationController
   def index
 		@all_ratings = Movie.select("rating").group("rating")
 		ratings=params[:ratings]
-    @movies = Movie.where(:rating=>ratings.keys)
+		if ratings == nil		
+			@all_ratings.each do |rating|
+				rating.rating = [rating.rating,true]
+			end
+    	@movies = Movie.where(:rating=>@all_ratings)
+		else
+			@all_ratings.each do |rating|
+				if ratings[rating.rating]==nil then
+					rating.rating = [rating.rating,false]
+				else
+					rating.rating = [rating.rating,true]
+				end
+			end
+    	@movies = Movie.where(:rating=>ratings.keys)
+		end
   end
 
   def new
