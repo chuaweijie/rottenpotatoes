@@ -22,11 +22,22 @@ class MoviesController < ApplicationController
   def index
 		@all_ratings = Movie.select("rating").group("rating")
 		ratings=params[:ratings]
+		session_ratings = session[:all_ratings]
+
 		if ratings == nil then
-			@all_ratings.each do |rating|
-				rating.rating = [rating.rating,true]
+			if session_ratings == nil then
+				@all_ratings.each do |rating|
+					rating.rating = [rating.rating,true]
+				end
+    		@movies = Movie.where(:rating=>@all_ratings)
+			else
+				@all_ratings=session_ratings
+				if session[:ratings]==nil then
+					@movies = Movie.where(:rating=>@all_ratings)
+				else			
+					@movies = Movie.where(:rating=>session[:ratings].keys)
+				end
 			end
-    	@movies = Movie.where(:rating=>@all_ratings)
 		else
 			@all_ratings.each do |rating|
 				if ratings[rating.rating]==nil then
