@@ -2,8 +2,17 @@ class MoviesController < ApplicationController
 
   def show
     id = params[:id] # retrieve movie ID from URI route
-    if id.to_i < 0 then
-        @movies = Movie.order("title").all
+		ratings = session[:ratings]
+		if id.to_i == -1 then
+     	@movies = Movie.order("title").where(:rating=>ratings.keys)
+			@titleClass='hilite'
+			@all_ratings = session[:all_ratings]
+	  	render "app/views/movies/index.html.haml"
+		elsif id.to_i == -2 then
+			@movies = Movie.order("release_date").where(:rating=>ratings.keys)
+			@dateClass='hilite'
+			@all_ratings = session[:all_ratings]
+			render "app/views/movies/index.html.haml"
     else
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
@@ -13,7 +22,7 @@ class MoviesController < ApplicationController
   def index
 		@all_ratings = Movie.select("rating").group("rating")
 		ratings=params[:ratings]
-		if ratings == nil		
+		if ratings == nil then
 			@all_ratings.each do |rating|
 				rating.rating = [rating.rating,true]
 			end
@@ -28,6 +37,8 @@ class MoviesController < ApplicationController
 			end
     	@movies = Movie.where(:rating=>ratings.keys)
 		end
+		session[:ratings]=ratings
+		session[:all_ratings]=@all_ratings
   end
 
   def new
@@ -57,45 +68,4 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
-  def sortTitle
-		@all_ratings = Movie.select("rating").group("rating")
-		ratings=params[:ratings]
-		if ratings == nil		
-			@all_ratings.each do |rating|
-				rating.rating = [rating.rating,true]
-			end
-    	@movies = Movie.where(:rating=>@all_ratings)
-		else
-			@all_ratings.each do |rating|
-				if ratings[rating.rating]==nil then
-					rating.rating = [rating.rating,false]
-				else
-					rating.rating = [rating.rating,true]
-				end
-			end
-    	@movies = Movie.order("title").where(:rating=>ratings.keys)
-		end
-  end
-
-  def sortDate
- 		@all_ratings = Movie.select("rating").group("rating")
-		ratings=params[:ratings]
-		if ratings == nil		
-			@all_ratings.each do |rating|
-				rating.rating = [rating.rating,true]
-			end
-    	@movies = Movie.where(:rating=>@all_ratings)
-		else
-			@all_ratings.each do |rating|
-				if ratings[rating.rating]==nil then
-					rating.rating = [rating.rating,false]
-				else
-					rating.rating = [rating.rating,true]
-				end
-			end
-    	@movies = Movie.order("release_date").where(:rating=>ratings.keys)
-		end  
-  end
-
 end
