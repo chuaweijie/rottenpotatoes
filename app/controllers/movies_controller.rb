@@ -7,11 +7,13 @@ class MoviesController < ApplicationController
      	@movies = Movie.order("title").where(:rating=>ratings.keys)
 			@titleClass='hilite'
 			@all_ratings = session[:all_ratings]
+			session[:order]="title"
 	  	render "app/views/movies/index.html.haml"
 		elsif id.to_i == -2 then
 			@movies = Movie.order("release_date").where(:rating=>ratings.keys)
 			@dateClass='hilite'
 			@all_ratings = session[:all_ratings]
+			session[:order]="release_date"
 			render "app/views/movies/index.html.haml"
     else
     @movie = Movie.find(id) # look up movie by unique ID
@@ -35,7 +37,7 @@ class MoviesController < ApplicationController
 				if session[:ratings]==nil then
 					@movies = Movie.where(:rating=>@all_ratings)
 				else			
-					@movies = Movie.where(:rating=>session[:ratings].keys)
+					@movies = Movie.order(session[:order]).where(:rating=>session[:ratings].keys)
 				end
 			end
 		else
@@ -46,7 +48,7 @@ class MoviesController < ApplicationController
 					rating.rating = [rating.rating,true]
 				end
 			end
-    	@movies = Movie.where(:rating=>ratings.keys)
+    	@movies = Movie.order(session[:order]).where(:rating=>ratings.keys)
 		end
 		session[:ratings]=ratings
 		session[:all_ratings]=@all_ratings
